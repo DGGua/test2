@@ -37,13 +37,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
-var sharp = require("sharp");
+var Jimp = require("jimp");
+var numberIdentify_1 = require("./numberIdentify");
 function req() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res, rej) {
+            return [2 /*return*/, new Promise(function (res) {
                     request("http://cwsf.whut.edu.cn/authImage").on("data", function (data) {
-                        res(data);
+                        res(Buffer.from(data));
                     });
                 })];
         });
@@ -51,27 +52,22 @@ function req() {
 }
 function test() {
     return __awaiter(this, void 0, void 0, function () {
-        var data, image, _a, width, height, sliceWidth;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
-                case 0: return [4 /*yield*/, req()];
-                case 1:
-                    data = _b.sent();
-                    console.log("ok");
-                    image = sharp(data);
-                    image.toFile("raw.jpg");
-                    image
-                        .grayscale() // 灰度
-                        .normalise() // 高对比
-                        .normalise() // 高对比
-                        .threshold(); // 二值
-                    return [4 /*yield*/, image.metadata()];
+        var image, _a, _b, ans;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _b = (_a = Jimp).read;
+                    return [4 /*yield*/, req()];
+                case 1: return [4 /*yield*/, _b.apply(_a, [_c.sent()])];
                 case 2:
-                    _a = _b.sent(), width = _a.width, height = _a.height;
-                    image
-                        .extract({ height: height - 2, left: 1, top: 1, width: width - 2 })
-                        .toFile("test.jpg");
-                    sliceWidth = Math.floor(width / 4);
+                    image = _c.sent();
+                    image.grayscale(); // 灰度
+                    ans = "";
+                    [8, 23, 38, 53].forEach(function (left, index) {
+                        var imagec = image.clone();
+                        ans += (0, numberIdentify_1.charDistinguish)(imagec.crop(left, 3, 9, 12));
+                    });
+                    console.log(ans);
                     return [2 /*return*/];
             }
         });
